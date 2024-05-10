@@ -36,20 +36,6 @@ irisSegmenationModel = ort.InferenceSession(
 print(f"Models run on {ort.get_device()}")
 print()
 
-def findContour(data):
-    image_iris = np.where(data == 1, 255, 0).astype(np.uint8)
-    image_sclera = np.where(data == 2, 255, 0).astype(np.uint8)
-    # Add iris and sclera
-    combined = cv2.bitwise_or(image_sclera, image_iris)
-    # Find iris contour
-    iris_contour = cv2.bitwise_and(
-        cv2.dilate(image_iris, np.ones((3, 3), np.uint8), iterations=1), image_sclera
-    )
-    contourPoints = np.where(iris_contour == 255)
-    contourPoints = np.array(contourPoints).transpose()
-    contourPoints = np.flip(contourPoints, axis=None)
-    return combined, iris_contour, contourPoints, image_sclera, image_iris
-
 def get_eyes_seg_result(eyes):
     combinedArr = []
     contourPointsArr = []
@@ -69,29 +55,3 @@ def get_eyes_seg_result(eyes):
 
 
     return combinedArr, contourPointsArr, maskScleraArr, maskIrisArr
-
-
-def counting_area(eyes):
-    maskIris = []
-    maskSclera = []
-    contourPointsArr = []
-    for eye in eyes:
-        eyeImg = cv2.resize(eye, (512, 512), interpolation=cv2.INTER_AREA)
-        result = iris_segmenation(eyeImg)
-        combined, contour, contour_points, mask_sclera, mask_iris = findContour(result)
-        
-        mask_iris[mask_iris > 0] = 128
-        maskIris.append(mask_iris)
-        mask_sclera[mask_sclera > 0] = 64
-        maskSclera.append(mask_sclera)
-
-        combined = cv2.cvtColor(combined, cv2.COLOR_GRAY2BGR)
-        combined[mask_iris == 128] = [0, 0, 255]
-        combined[mask_sclera == 64] = [255, 0, 0]
-
-        contourPointsArr.append(contour_points)
-    count = cv2.countNonZero(maskIris[0]) + cv2.countNonZero(maskIris[1])
-    mask = [cv2.bitwise_or(maskIris[i], maskSclera[i]) for i in range(len(eyes))]
-    return count, mask
-
-
