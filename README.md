@@ -17,6 +17,6 @@ GetIris
 
 ## Requirement
 mediapipe  
-opencv&  
+opencv  
 onnxruntime-gpu  
 pygad  
