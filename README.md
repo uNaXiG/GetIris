@@ -14,3 +14,9 @@ GetIris
 &emsp;&emsp;|_____segmentation  
 &emsp;&emsp;&emsp;&emsp;|_____IrisSegmentation.onnx  
 &emsp;  
+
+## Requirement
+mediapipe  
+opencv&  
+onnxruntime-gpu  
+pygad  
