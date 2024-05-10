@@ -16,7 +16,7 @@ GetIris
 &emsp;  
 
 ## Requirement
-numpy
+numpy  
 mediapipe  
 opencv  
 onnxruntime-gpu  
