@@ -24,7 +24,7 @@ solution, _, __ = GaFit.run(contourPointsArr)
 # 換算原圖大小
 scale = 512/eyes[0].shape[0]
 x, y = int(solution[0] / scale), int(solution[1] / scale)
-x1, y1 = int(solution[2] // scale), int(solution[3] // scale)
+x1, y1 = int(solution[2] / scale), int(solution[3] / scale)
 radius = int(solution[4] / scale)
 
 cv2.circle(img, (x + left_bbox[0], y + left_bbox[1]), 1, (0, 0, 255), 2)
