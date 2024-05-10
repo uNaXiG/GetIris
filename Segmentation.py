@@ -25,54 +25,6 @@ def iris_segmenation(img):
     result = result.astype(np.uint8)
     return result
 
-
-def crease_type(img, flip=False):
-    input_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    if flip:
-        input_img = cv2.flip(input_img, 1)
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-    input_img = input_img.astype(np.float32)
-    input_img = (input_img / 255.0 - mean) / std
-    input_img = input_img.astype(np.float32)
-    # HWC to NCHW
-    input_img = np.transpose(input_img, [2, 0, 1])
-    input_img = np.expand_dims(input_img, 0)
-    result = inference_model(creaseTypeModel, input_img)
-    return result
-
-
-def crease_landmark(img, flip=False):
-    image = cv2.resize(img, (64, 64))
-    if flip:
-        image = cv2.flip(image, 1)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    mean = [123.675, 116.28, 103.53]
-    std = [58.395, 57.12, 57.375]
-    image = image.astype(np.float32)
-    image = (np.array(image) - mean) / std
-    image = image.astype(np.float32)
-    input_img = np.transpose(image, [2, 0, 1])
-    input_img = np.expand_dims(input_img, 0)
-    result = inference_model(creaseLandmarkModel, input_img)
-    result = result.reshape(9, 2) * 512
-    result = result.astype(np.int32)
-    if flip:
-        result[:, 0] = 511 - result[:, 0]
-    return result
-
-print("Loading Crease Type Model")
-creaseTypeModel = ort.InferenceSession(
-    r"segmentation\CreaseType.onnx", providers=providers
-)
-inference_model(creaseTypeModel, np.zeros((1, 3, 512, 512), dtype=np.float32))
-
-print("Loading Crease Landmark Model")
-creaseLandmarkModel = ort.InferenceSession(
-    r"segmentation\CreaseLandmark.onnx", providers=providers
-)
-inference_model(creaseLandmarkModel, np.zeros((1, 3, 64, 64), dtype=np.float32))
-
 print("Loading Iris Segmenation Model")
 irisSegmenationModel = ort.InferenceSession(
     r"segmentation\IrisSegmentation.onnx", providers=providers
