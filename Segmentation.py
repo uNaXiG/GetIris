@@ -4,12 +4,19 @@ import cv2
 # providers=['CUDAExecutionProvider', "CPUExecutionProvider"]
 providers=["CPUExecutionProvider"]
 
+print("Loading Iris Segmenation Model")
+irisSegmenationModel = ort.InferenceSession(
+    r"segmentation\IrisSegmentation.onnx", providers=providers
+)
+
+print(f"Models run on {ort.get_device()}")
+print()
+
 def inference_model(model: ort.InferenceSession, img):
     input_name = model.get_inputs()[0].name
     output_name = model.get_outputs()[0].name
     result = model.run([output_name], {input_name: img})[0]
     return result
-
 
 def iris_segmenation(img):
     input_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -24,17 +31,6 @@ def iris_segmenation(img):
     result = result.reshape(512, 512)
     result = result.astype(np.uint8)
     return result
-
-print("Loading Iris Segmenation Model")
-irisSegmenationModel = ort.InferenceSession(
-    r"segmentation\IrisSegmentation.onnx", providers=providers
-)
-
-# print("Testing Model")
-# inference_model(irisSegmenationModel, np.zeros((1, 3, 512, 512), dtype=np.float32))
-
-print(f"Models run on {ort.get_device()}")
-print()
 
 def get_eyes_seg_result(eyes):
     combinedArr = []
