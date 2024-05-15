@@ -32,6 +32,20 @@ def iris_segmenation(img):
     result = result.astype(np.uint8)
     return result
 
+def findContour(data):
+    image_iris = np.where(data == 1, 255, 0).astype(np.uint8)
+    image_sclera = np.where(data == 2, 255, 0).astype(np.uint8)
+    # Add iris and sclera
+    combined = cv2.bitwise_or(image_sclera, image_iris)
+    # Find iris contour
+    iris_contour = cv2.bitwise_and(
+        cv2.dilate(image_iris, np.ones((3, 3), np.uint8), iterations=1), image_sclera
+    )
+    contourPoints = np.where(iris_contour == 255)
+    contourPoints = np.array(contourPoints).transpose()
+    contourPoints = np.flip(contourPoints, axis=None)
+    return combined, iris_contour, contourPoints, image_sclera, image_iris
+    
 def get_eyes_seg_result(eyes):
     combinedArr = []
     contourPointsArr = []
